@@ -6,7 +6,9 @@
 </head>
 
 <body onclick=myFunction(event)>
-    <p id="demo">Three circles linked by links</p>
+    <a href="https://stackoverflow.com/questions/5451135/embed-svg-in-svg">SVG images added courtesy of
+        StackOverflow</a>
+    <p id="demo">Three circles and two PCs linked by lines</p>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" onload="makeDraggable(evt)">
 
         <style>
@@ -92,7 +94,9 @@
             relatedLinks(selectedElement);
             if (selectedElement.tagName === "image") {
                 offset1.x -= parseFloat(selectedElement.getAttributeNS(null, "x")) + transform.matrix.e;
+                offset1.x -= parseFloat(selectedElement.getAttributeNS(null, "width")) / 2;
                 offset1.y -= parseFloat(selectedElement.getAttributeNS(null, "y")) + transform.matrix.f;
+                offset1.y -= parseFloat(selectedElement.getAttributeNS(null, "height")) / 2;
             } else if (selectedElement.tagName === "circle") {
                 offset1.x -= parseFloat(selectedElement.getAttributeNS(null, "cx")) + transform.matrix.e;
                 offset1.y -= parseFloat(selectedElement.getAttributeNS(null, "cy")) + transform.matrix.f;
