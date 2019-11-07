@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Draggable Group SVG</title>
+</head>
+
+<body onclick=myFunction(event)>
+    <p>Versiunea obiectuala. Pe moment abandonata</p>
+    <p id="demo">text initial</p>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" onload="makeDraggable(evt)">
+
+        <style>
+            .static,
+            .hanging {
+                cursor: not-allowed;
+            }
+
+            .draggable,
+            .draggable-group {
+                cursor: move;
+            }
+        </style>
+
+        <rect x="0" y="0" width="30" height="20" fill="#eee" />
+        <rect class="static" fill="#888" x="2" y="4" width="6" height="2" />
+        <rect class="draggable" fill="#007bff" x="2" y="4" width="6" height="2"
+            transform="rotate(90, 5, 5) translate(10, 0)" />
+        <line id="link_element1-element2" class="hanging" x1="15" y1="5" x2="17" y2="7"
+            style="stroke:black;stroke-width:0.1" />
+        <line id=link_element2-element3" class="hanging" x1="17" y1="7" x2="19" y2="5"
+            style="stroke:black;stroke-width:0.1" />
+        <circle id="element1" class="draggable" cx="15" cy="5" r="0.5" stroke="black" stroke-width="0.1" fill="red" />
+        <circle id="element2" class="draggable" cx="17" cy="7" r="0.5" stroke="black" stroke-width="0.1" fill="red" />
+        <circle id="element3" class="draggable" cx="19" cy="5" r="0.5" stroke="black" stroke-width="0.1" fill="red" />
+    </svg>
+</body>
+<script type="text/javascript">
+
+    // class Point {
+    //     constructor(x, y) {
+    //         this.x = x;
+    //         this.y = y;
+    //     }
+    // }
+
+    class LinkBind {
+        constructor(linkID, x, y) {
+            this.id = linkID;
+            this.x = x; //x1 or x2
+            this.y = y; //y1 or y2
+        }
+    }
+
+    class Node {
+        constructor(node, links) {
+            this.name = node;
+            this.links = links;
+        }
+    }
+
+    var selectedElement, offset, transform;
+    var all_links = document.getElementsByClassName("hanging");
+
+    var link1Bind = new Link("link_element1-element2", x1, y1);
+    var link2Bind = new Link("link_element2-element3")
+
+    var dev1 = new Node("element1")
+
+    function makeDraggable(evt) {
+        var svg = evt.target;
+
+        svg.addEventListener('mousedown', startDrag);
+        svg.addEventListener('mousemove', drag);
+        svg.addEventListener('mouseup', endDrag);
+        svg.addEventListener('mouseleave', endDrag);
+        svg.addEventListener('touchstart', startDrag);
+        svg.addEventListener('touchmove', drag);
+        svg.addEventListener('touchend', endDrag);
+        svg.addEventListener('touchleave', endDrag);
+        svg.addEventListener('touchcancel', endDrag);
+
+        function getMousePosition(evt) {
+            var CTM = svg.getScreenCTM();
+            if (evt.touches) { evt = evt.touches[0]; }
+            return {
+                x: (evt.clientX - CTM.e) / CTM.a,
+                y: (evt.clientY - CTM.f) / CTM.d
+            };
+        }
+
+        function initialiseDragging(evt) {
+            offset = getMousePosition(evt);
+
+            // Make sure the first transform on the element is a translate transform
+            var transforms = selectedElement.transform.baseVal;
+
+            if (transforms.length === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
+                // Create an transform that translates by (0, 0)
+                var translate = svg.createSVGTransform();
+                translate.setTranslate(0, 0);
+                selectedElement.transform.baseVal.insertItemBefore(translate, 0);
+            }
+
+            // Get initial translation
+            transform = transforms.getItem(0);
+            offset.x -= transform.matrix.e;
+            offset.y -= transform.matrix.f;
+            relatedLinks(selectedElement);
+        }
+
+        function startDrag(evt) {
+            if (evt.target.classList.contains('draggable')) {
+                selectedElement = evt.target;
+                initialiseDragging(evt);
+            } else if (evt.target.parentNode.classList.contains('draggable-group')) {
+                selectedElement = evt.target.parentNode;
+                initialiseDragging(evt);
+            }
+        }
+
+        function drag(evt) {
+            if (selectedElement) {
+                evt.preventDefault();
+                var coord = getMousePosition(evt);
+                transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+
+                // links[0].setAttributeNS(null, "x1", coord.x - offset.x);
+                // links[0].setAttributeNS(null, "y1", coord.y - offset.y);
+                links[0].setAttributeNS(null, "x1", coord.x);
+                links[0].setAttributeNS(null, "y1", coord.y);
+            }
+        }
+
+        function endDrag(evt) {
+            selectedElement = false;
+        }
+    }
+
+    function relatedLinks(node) {    //node is a symbol of a device or map or network or ...
+        links = [];
+        linksIDs = [];
+
+        for (let link of all_links) {
+            if (link.id.includes(node.id)) {
+                links.push(link);
+                linksIDs.push(link.id);
+            }
+        }
+
+        return links;
+    }
+
+    function myFunction(event) {
+        var x = event.target;
+        document.getElementById("demo").innerHTML = "Triggered by a " + x.id + " element";
+        // let all_links = document.getElementsByClassName("hanging");
+
+        relatedLinks(x);
+        // links = all_links.filter(link => link.id.includes(x.id));
+    }
+
+    var tmp = document.getElementById("demo");
+    console.log("ID = " + tmp.id);
+    tmp = document.getElementById("link_element1-element2");
+    console.log("ID = " + tmp.id);
+
+</script>
+
+</html>

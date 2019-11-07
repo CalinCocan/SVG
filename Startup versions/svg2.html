@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Draggable izolated SVG</title>
+	<link rel="stylesheet" href="css/svg2.css">
+</head>
+<body>
+
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" onload="makeDraggable(evt)">
+	  <rect x="0" y="0" width="30" height="20" fill="#fafafa" class="static"/>
+	  <rect x="4" y="5" width="8" height="10" fill="#007bff" class="draggable"/>
+	  <rect x="18" y="5" width="8" height="10"   fill="#888" class="draggable"/>
+	</svg>
+
+<!-- 	<svg width="500" height="200" viewBox="0 0 50 20" >
+	    <rect x="20" y="10" width="10px" height="5px" style="stroke: #000000; fill:blue;"/>
+	</svg> -->
+</body>
+	<script type="text/javascript">
+		//copy from Peter Colingridge
+		function makeDraggable(evt) {
+			var svg = evt.target;
+		 	svg.addEventListener('mousedown', startDrag);
+			svg.addEventListener('mousemove', drag);
+			svg.addEventListener('mouseup', endDrag);
+			svg.addEventListener('mouseleave', endDrag);
+			svg.addEventListener('touchstart', startDrag);
+			svg.addEventListener('touchmove', drag);
+			svg.addEventListener('touchend', endDrag);
+			svg.addEventListener('touchleave', endDrag);
+			svg.addEventListener('touchcancel', endDrag);
+		  
+			var selectedElement=false, offset, transform;
+
+			function startDrag(evt) {
+		  		if (evt.target.classList.contains('draggable')) {
+    			selectedElement = evt.target;//.parentNode;
+    			offset = getMousePosition(evt);
+				// Get all the transforms currently on this element
+				var transforms = selectedElement.transform.baseVal;
+				// Ensure the first transform is a translate transform
+				if (transforms.length === 0 ||
+					transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
+			    	// Create an transform that translates by (0, 0)
+			    	var translate = svg.createSVGTransform();
+			    	translate.setTranslate(0, 0);
+			    	// Add the translation to the front of the transforms list
+			    	selectedElement.transform.baseVal.insertItemBefore(translate, 0);
+			    }
+			    // Get initial translation amount
+			    transform = transforms.getItem(0);
+			    offset.x -= transform.matrix.e;
+			    offset.y -= transform.matrix.f;
+				}
+			}
+
+			function drag(evt) {
+				if (selectedElement) {
+					evt.preventDefault();
+					var coord = getMousePosition(evt);
+					transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+				}
+			}
+
+			function endDrag(evt) {
+				selectedElement = null;
+			}
+
+			function getMousePosition(evt) {
+				var CTM = svg.getScreenCTM();
+				if (evt.touches) { evt = evt.touches[0]; }
+				return {
+					x: (evt.clientX - CTM.e) / CTM.a,
+					y: (evt.clientY - CTM.f) / CTM.d
+				};
+			}
+
+		}
+	</script>
+</html>
