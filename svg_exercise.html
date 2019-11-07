@@ -6,7 +6,7 @@
 </head>
 
 <body onclick=myFunction(event)>
-    <p id="demo">text initial</p>
+    <p id="demo">Three circles linked by links</p>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" onload="makeDraggable(evt)">
 
         <style>
@@ -29,10 +29,19 @@
             style="stroke:black;stroke-width:0.1" />
         <line id="link_element2-element3" class="hanging" x1="17" y1="7" x2="19" y2="5"
             style="stroke:black;stroke-width:0.1" />
+        <line id="link_element5-element2" class="hanging" x1="9.5" y1="8.5" x2="17" y2="7"
+            style="stroke:black;stroke-width:0.1" />
+        <line id="link_element4-element5" class="hanging" x1="4.5" y1="8.5" x2="9.5" y2="8.5"
+            style="stroke:black;stroke-width:0.1" />
         <circle id="element1" class="draggable" cx="15" cy="5" r="0.5" stroke="black" stroke-width="0.1" fill="red" />
         <circle id="element2" class="draggable" cx="17" cy="7" r="0.5" stroke="black" stroke-width="0.1" fill="red" />
         <circle id="element3" class="draggable" cx="19" cy="5" r="0.5" stroke="black" stroke-width="0.1" fill="red" />
+
+        <!-- <object id="svg-object1" class="draggable"  data="images/pc.svg" type="image/svg+xml"></object> -->
+        <image id="element4" class="draggable" x="3" y="7" width="3" height="3" xlink:href="images/pc2.svg" />
+        <image id="element5" class="draggable" x="8" y="7" width="3" height="3" xlink:href="images/pc3.svg" />
     </svg>
+    <object id="svg-object2" class="draggable" data="images/pc.svg" type="image/svg+xml"></object>
 </body>
 <script type="text/javascript">
     var selectedElement, offset, offset1, transform;
@@ -81,8 +90,13 @@
             offset.x -= transform.matrix.e;
             offset.y -= transform.matrix.f;
             relatedLinks(selectedElement);
-            offset1.x -= parseFloat(selectedElement.getAttributeNS(null, "cx")) + transform.matrix.e;
-            offset1.y -= parseFloat(selectedElement.getAttributeNS(null, "cy")) + transform.matrix.f;
+            if (selectedElement.tagName === "image") {
+                offset1.x -= parseFloat(selectedElement.getAttributeNS(null, "x")) + transform.matrix.e;
+                offset1.y -= parseFloat(selectedElement.getAttributeNS(null, "y")) + transform.matrix.f;
+            } else if (selectedElement.tagName === "circle") {
+                offset1.x -= parseFloat(selectedElement.getAttributeNS(null, "cx")) + transform.matrix.e;
+                offset1.y -= parseFloat(selectedElement.getAttributeNS(null, "cy")) + transform.matrix.f;
+            }
         }
 
         function startDrag(evt) {
