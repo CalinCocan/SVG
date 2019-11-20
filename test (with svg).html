@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+    <link rel="stylesheet" href="test.css" />
+</head>
+
+<body>
+    <div>test</div>
+    <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" onload="makeDraggable(evt)"> -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20">
+
+        <rect x="0" y="0" width="30" height="20" fill="#eee" />
+    </svg>
+    <div class="menu">
+        <ul class="menu-options">
+            <li class="menu-option">Back</li>
+            <li class="menu-option">Reload</li>
+            <li class="menu-option">Save</li>
+            <li class="menu-option">Save As</li>
+            <li class="menu-option">Inspect</li>
+        </ul>
+    </div>
+
+</body>
+<script>
+    menu = document.getElementsByClassName("menu")[0];
+    let menuVisible = false;
+
+    screen = document.getElementsByTagName("svg")[0];
+
+    screen.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        const origin = {
+            left: e.pageX - 5,
+            top: e.pageY - 35
+        };
+        setPosition(origin);
+        return false;
+    });
+
+    screen.addEventListener("click", e => {
+        if (menuVisible) toggleMenu("hide");
+    });
+
+    const toggleMenu = command => {
+        menu.style.display = command === "show" ? "block" : "none";
+        menuVisible = !menuVisible;
+    };
+
+    const setPosition = ({ top, left }) => {
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+        toggleMenu('show');
+    };
+
+
+</script>
+
+</html>
