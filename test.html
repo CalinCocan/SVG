@@ -14,11 +14,14 @@
     <a href="https://dev.to/iamafro/how-to-create-a-custom-context-menu--5d7p">
         https://dev.to/iamafro/how-to-create-a-custom-context-menu--5d7p </a>
     <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" onload="makeDraggable(evt)"> -->
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20">
+    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="400px" height="200px" viewBox="0 0 30 20"> -->
+    <p>Text 2</p>
+    <p id="svg_holder">
+        <svg id="svg_frame" xmlns="http://www.w3.org/2000/svg" width="400px" height="200px" viewBox="0 0 40 20">
 
-        <rect x="0" y="0" width="30" height="20" fill="#eee" />
-    </svg>
-
+            <rect x="0" y="0" width="30" height="20" fill="#eee" />
+        </svg>
+    </p>
 
     <div class="menu">
         <ul class="menu-options">
@@ -34,6 +37,18 @@
 <script src="test_data.js"></script>
 <script>
     console.log(testData[1]);
+    var svgHolder = document.getElementById("svg_holder");
+    var holderOffset = svgHolder.offsetTop;
+    // var holderMargin = svgHolder.style.marginTop;
+    var holderMargin = window.getComputedStyle(svgHolder).marginTop;
+    // var htmlObj = document.getElementsByTagName("html")[0];
+    // var style = htmlObj.currentStyle || window.getComputedStyle(htmlObj);
+    // var style = window.getComputedStyle(htmlObj);
+    // var htmlMargin = style.margin - top;
+    var svgFrameH = document.getElementById("svg_frame").height.baseVal.value;
+    var offsetH = holderOffset + parseInt(holderMargin, 10) + svgFrameH + 3;
+
+    console.log(offsetH);
 
     menu = document.getElementsByClassName("menu")[0];
     let menuVisible = false;
@@ -42,7 +57,7 @@
         e.preventDefault();
         const origin = {
             left: e.pageX - 5,
-            top: e.pageY - 35
+            top: e.pageY - offsetH // -279
         };
         setPosition(origin);
         return false;
